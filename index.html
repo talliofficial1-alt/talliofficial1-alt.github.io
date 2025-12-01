@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCIPnet L5 System Access</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'scp-green': '#00ff00',
+                    },
+                    fontFamily: {
+                        mono: ['Consolas', 'Monaco', 'Lucida Console', 'monospace'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Core BIOS Aesthetics */
+        body {
+            background-color: #000;
+            color: #00ff00;
+            font-size: 14px;
+            overflow-y: scroll; 
+            padding-bottom: 50px;
+        }
+        .terminal {
+            width: 100%;
+            max-width: 800px; /* Default width for Stage 1 */
+            margin: 0 auto;
+            padding: 1rem;
+            line-height: 1.5;
+            white-space: pre-wrap;
+        }
+        /* New Style for wide document view (Stage 2) */
+        #stage-two.terminal {
+            max-width: 1200px; /* Increased maximum width */
+            padding-top: 3rem;
+        }
+        
+        /* FIX: Ensures the preformatted text wraps inside the document box */
+        .document-pre-format {
+            white-space: pre-wrap; /* Allows text to wrap */
+            word-break: break-word; /* Prevents long words/strings from breaking layout */
+        }
+
+        /* Styling for the login box elements */
+        .login-row {
+            display: flex; /* Use flexbox for alignment */
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .text-label {
+            width: 180px; /* Fixed width for the label */
+            flex-shrink: 0;
+            text-align: right;
+            padding-right: 1rem;
+        }
+        .text-input {
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid #00ff00;
+            color: #00ff00;
+            outline: none;
+            width: 100%; /* Stretch to fill remaining space */
+            flex-grow: 1;
+            padding-left: 5px;
+            /* Remove default width */
+        }
+
+        /* Simulated CRT Scanlines */
+        .terminal::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg, 
+                rgba(0, 0, 0, 0.1), 
+                rgba(0, 0, 0, 0.1) 1px, 
+                transparent 1px, 
+                transparent 2px
+            );
+            pointer-events: none;
+            opacity: 0.3;
+        }
+        .blink {
+            animation: blinker 1s step-start infinite;
+        }
+        @keyframes blinker {
+            50% { opacity: 0; }
+        }
+    </style>
+</head>
+<body class="font-mono">
+
+    <!-- STAGE 1: BIOS & Primary Login (Malice Cato) -->
+    <div id="stage-one" class="terminal">
+        <!-- ASCII Art Header -->
+        <pre class="text-scp-green mb-4">
+  ____ ____ ____ ____ ____ ____ ________ ________ 
+ ||S |||C |||I |||P |||N |||E |||T ||| |||L5 ||
+ ||__|||__|||__|||__|||__|||__|||__||| |||___||
+ |/__\|/__\|/__\|/__\|/__\|/__\|/__\|/| |/__\|
+
+     SCIPNET v4.2.1-L5.BIOS [SECURE INTERFACE]
+  (C) 1988-2025 Foundation Department of Technology
+        </pre>
+        
+        <!-- Boot Log Output Area -->
+        <div id="boot-log">
+            <!-- Simulated text output goes here -->
+        </div>
+
+        <!-- Login Prompt (Hidden until boot completes) -->
+        <div id="login-prompt" class="hidden mt-4">
+            <h3 class="text-white text-lg mb-4 text-center">ACCESS TERMINAL INITIATED</h3>
+            <form id="login-form" class="w-full">
+                
+                <!-- Personnel ID Row -->
+                <div class="login-row">
+                    <label for="id_input" class="text-label">>> PERSONNEL ID:</label>
+                    <input type="text" id="id_input" class="text-input" value="Malice Cato" autocomplete="off" required>
+                </div>
+                
+                <!-- Crypto Key Row -->
+                <div class="login-row">
+                    <label for="key_input" class="text-label">>> CRYPTO KEY:</label>
+                    <input type="password" id="key_input" class="text-input" value="540988" required>
+                </div>
+                
+                <!-- Button Row (Full width and centered) -->
+                <div class="text-center pt-4">
+                    <button type="submit" class="border border-scp-green p-2 w-full max-w-xs hover:bg-scp-green hover:text-black transition duration-150 text-lg font-bold">
+                        [ INITIATE L5 AUTH ]
+                    </button>
+                </div>
+            </form>
+
+            <p class="mt-4"><span id="cursor" class="blink">_</span></p>
+        </div>
+    </div>
+    
+    <!-- STAGE 2: Redirected Document View (Sylas M) -->
+    <div id="stage-two" class="terminal hidden min-h-screen">
+        <h1 class="text-3xl font-bold text-red-500 border-b-2 border-red-500 pb-2 mb-4">SCIPNET L5 - SECURE DOCUMENT ACCESS</h1>
+        <div id="secondary-auth-log" class="text-xs text-yellow-400 mb-4">
+            <!-- Automated login log will appear here -->
+        </div>
+        
+        <h2 class="text-xl text-scp-green mb-4">FILE: 1-5 - S45 FWLOC - SYLAS.pdf (FOUNDATIONAL PERSONNEL TEMPLATE)</h2>
+        <div id="doc-view" class="bg-black border border-scp-green p-4 text-sm w-full"> 
+            <!-- Document content will be injected here -->
+        </div>
+        <p class="mt-4 text-xs text-gray-500">End of File. Press ESC to return to main console.</p>
+    </div>
+
+    <script>
+        // --- Configuration ---
+        const BOOT_LOG = [
+            "Initializing System Clock: OK",
+            "Checking Mainframe Integrity (Checksum 83A7F2): COMPLETE",
+            "Loading Protocol Module: PRTCL-KRONOS-7.1",
+            "Verifying Trusted Execution Environment (TEE): L5_SECURE.ENV",
+            "Establishing Biometric Link: SUCCESS [STATUS: CLEAR]",
+            "Initializing SCIPnet Layer-2 Connection: ACK",
+            "Loading Clearance Profile: LEVEL 5 (NON-O5)",
+            "-----------------------------------------------------------------------",
+            "SYSTEM READY. AWAITING PRIMARY CREDENTIALS.",
+        ];
+        
+        // --- Stage 1 Credentials (Malice Cato) ---
+        const PRIMARY_ID = 'Malice Cato';
+        const PRIMARY_KEY = '540988';
+
+        // --- Stage 2 Credentials (Sylas M) ---
+        const SECONDARY_ID = 'Sylas M'; 
+        const SECONDARY_KEY = '540988';
+        
+        // --- Document Content (from the uploaded PDF) ---
+        const DOCUMENT_CONTENT = `
+SITE-45 | WHITELIST DEPARTMENT
+FOUNDATIONAL PERSONNEL TEMPLATE
+
+-----------------------------------------------------------------------
+-----------------------------------------------------------------------
+
+SCP:F Foundational Recordkeeping
+Log of all Regular Information and Background Information.
+
+Codename: Sylas
+Name: Malice Cato
+Age: 20
+Alignment: Foundation
+Experienced In: Computer Science, Computer Engineering, Math, Coding, Weapon Engineering, Weapon Modification.
+
+Attributes: Malice is super intelligent and has two different colored eyes (gray and red). He has semi-short brown hair.
+Preferences/Hobbies: Coding, computer science, and construction of tech. Prefers baggy clothes.
+Height: 5'5
+
+IR-4001-A | Incident Report
+IR-4001-A hasn't truly affected Malice in any way. All he knows is that's how his mother died.
+
+Character Background
+Malice grew up mischievous, skipping countless grades due to his smarts (10-year-old in 10th grade). Lacks the ability to make friends due to severe social anxiety. Graduated high school at 13.
+By 17, he graduated college with masters in Computer Engineering and Coding.
+He then worked with his father, Otto, on weaponry, quickly learning to construct and modify weapons.
+He became Chief Intelligence Officer at an Italian intelligence company at the age of 18 in only 4.5 weeks.
+
+Foundation Recruitment:
+After the foundation noticed Malice and his expertise along with his recent loss (his father's passing). He was scouted and eventually taken from his home and offered a contract position making Resh-1's technology and weaponry.
+
+Anomalous Ability/Requested Tools:
+Tool Name: L5 keycard (Reason: Resh-1 Contractor/Intelligence)
+Tool Name: Glock "Pistol" (Reason: Self-defense)
+Specialties: Computer Science, Computer Engineering.
+`;
+        
+        // --- DOM Elements ---
+        const stageOne = document.getElementById('stage-one');
+        const stageTwo = document.getElementById('stage-two');
+        const logContainer = document.getElementById('boot-log');
+        const loginPrompt = document.getElementById('login-prompt');
+        const loginForm = document.getElementById('login-form');
+        const idInput = document.getElementById('id_input');
+        const keyInput = document.getElementById('key_input');
+        const secondaryAuthLog = document.getElementById('secondary-auth-log');
+        const docView = document.getElementById('doc-view');
+
+
+        let currentLine = 0;
+
+        // --- Core Text Typing Function ---
+        function typeText(container, line, callback) {
+            const lineElement = document.createElement('p');
+            container.appendChild(lineElement);
+            let charIndex = 0;
+            const speed = 15;
+
+            function type() {
+                if (charIndex < line.length) {
+                    lineElement.textContent += line.charAt(charIndex);
+                    charIndex++;
+                    setTimeout(type, speed);
+                } else {
+                    if (callback) {
+                        setTimeout(callback, 200);
+                    }
+                }
+            }
+            type();
+        }
+
+        // --- Stage 1 Boot Sequence ---
+        function runBootSequence() {
+            if (currentLine < BOOT_LOG.length) {
+                const line = BOOT_LOG[currentLine];
+                currentLine++;
+                typeText(logContainer, line, runBootSequence);
+            } else {
+                loginPrompt.classList.remove('hidden');
+                window.scrollTo(0, document.body.scrollHeight);
+            }
+        }
+
+        // --- Stage 2 Auto-Login and Document Load ---
+        function runSecondaryAccess() {
+            stageOne.classList.add('hidden');
+            stageTwo.classList.remove('hidden');
+            secondaryAuthLog.innerHTML = ''; // Clear log
+
+            const autoLog = [
+                `SYSTEM MESSAGE: Primary Malice Cato L5 access verified.`,
+                `SYSTEM MESSAGE: Executing Secondary Protocol FWLOC-S45.`,
+                `AUTH_REQ: Injecting secondary credentials into Sub-Terminal...`,
+                `ID: ${SECONDARY_ID} | KEY: ********`,
+                `AUTH_RES: Credentials Accepted. Clearance Validated.`,
+                `INIT: Decrypting and loading document content...`
+            ];
+
+            let logIndex = 0;
+            function runLog() {
+                if (logIndex < autoLog.length) {
+                    typeText(secondaryAuthLog, autoLog[logIndex], runLog);
+                    logIndex++;
+                } else {
+                    // All log lines complete, load the document
+                    setTimeout(loadDocument, 1000);
+                }
+            }
+            runLog();
+        }
+
+        function loadDocument() {
+            // Added the 'document-pre-format' class to force wrapping
+            docView.innerHTML = `<pre class="text-scp-green document-pre-format">${DOCUMENT_CONTENT}</pre>`;
+        }
+
+        // --- Stage 1 Login Handler (Malice Cato) ---
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const id = idInput.value.trim();
+            const key = keyInput.value.trim();
+
+            document.getElementById('cursor').textContent = '';
+
+            typeText(logContainer, ">> AUTHENTICATION PROTOCOL INITIATED...", () => {
+                setTimeout(() => {
+                    if (id === PRIMARY_ID && key === PRIMARY_KEY) {
+                        // Success -> Proceed to Stage 2
+                        typeText(logContainer, ">> CLEARANCE PROFILE MATCH: L5 VALIDATED", () => {
+                            typeText(logContainer, ">> ACCESS GRANTED. EXECUTING SUB-TERMINAL REDIRECTION...", () => {
+                                // Transition to Stage 2
+                                setTimeout(runSecondaryAccess, 2000); 
+                            });
+                        });
+                    } else {
+                        // Failure
+                        typeText(logContainer, ">> CLEARANCE PROFILE MISMATCH. ACCESS DENIED.", () => {
+                            typeText(logContainer, ">> SECURITY BREACH PROTOCOL INITIATED. LOCKDOWN IN T-10...", () => {
+                                logContainer.innerHTML += '<p class="text-red-500 mt-2">[ FATAL ERROR: CONNECTION TERMINATED ]</p>';
+                                document.getElementById('cursor').textContent = '_';
+                                window.scrollTo(0, document.body.scrollHeight);
+                                
+                                // Reset fields to default for easy retry
+                                idInput.value = PRIMARY_ID;
+                                keyInput.value = PRIMARY_KEY;
+                            });
+                        });
+                    }
+                }, 1500); // 1.5s simulated auth time
+            });
+        });
+
+        // Start the boot sequence when the page loads
+        window.onload = runBootSequence;
+
+    </script>
+</body>
+</html>
+
